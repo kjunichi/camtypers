@@ -1,0 +1,10 @@
+[package]
+name = "camtypers"
+version = "0.1.0"
+authors = ["Junichi Kajiwara <junichi.kajiwara@gmail.com>"]
+
+[dependencies]
+#webcamrs = {git =  "file:///C:/Users/kjw_j/Documents/work/rust/webcamrs/"}
+webcamrs = {path =  "C:/Users/kjw_j/Documents/work/rust/webcamrs/"}
+#imgtypers = {git = "file:///C:/Users/kjw_j/Documents/work/rust/imgtypers/"}
+imgtypers = {path = "C:/Users/kjw_j/Documents/work/rust/imgtypers/"}
