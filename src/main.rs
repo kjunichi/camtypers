@@ -24,7 +24,7 @@ fn atoi(num: String) -> i32 {
     num.parse().expect("not a number")
 }
 
-fn findChar(buf: &Vec<u8>, target: u8, len: i32) -> i32 {
+fn find_char(buf: &Vec<u8>, target: u8, len: i32) -> i32 {
     for i in 0..len {
         if buf[i as usize] == target {
             return i;
@@ -39,8 +39,8 @@ fn strncpy(mut line: &mut Vec<u8>, buf: &Vec<u8>, pos: i32) {
     }
 }
 
-fn readLine_(buf: &Vec<u8>, line: &mut Vec<u8>, len: i32) -> i32 {
-    let pos = findChar(&buf, '\n' as u8, len);
+fn read_line_(buf: &Vec<u8>, line: &mut Vec<u8>, len: i32) -> i32 {
+    let pos = find_char(&buf, '\n' as u8, len);
     if pos < 0 {
         return -1;
     }
@@ -50,17 +50,17 @@ fn readLine_(buf: &Vec<u8>, line: &mut Vec<u8>, len: i32) -> i32 {
     return pos + 1;
 }
 
-fn readLine(buf: &mut Vec<u8>, line: &mut Vec<u8>, len: i32) -> i32 {
+fn read_line(buf: &mut Vec<u8>, line: &mut Vec<u8>, len: i32) -> i32 {
     let mut tmpbuf = buf;
     let mut n: i32 = 0;
 
     loop {
-        let nn = readLine_(tmpbuf, line, 1024);
+        let nn = read_line_(tmpbuf, line, 1024);
         if nn < 0 {
             return -1;
         }
         n += nn;
-        for idx in 0..nn {
+        for _ in 0..nn {
             tmpbuf.remove(0);
         }
         // print!("line = ");
@@ -73,13 +73,13 @@ fn readLine(buf: &mut Vec<u8>, line: &mut Vec<u8>, len: i32) -> i32 {
 }
 
 fn get_image_size(buf: &mut Vec<u8>) -> (i32, i32) {
-    let mut tmpStr: Vec<u8> = Vec::with_capacity(256);
-    for i in 0..255 {
-        tmpStr.push(' ' as u8);
+    let mut tmp_str: Vec<u8> = Vec::with_capacity(256);
+    for _ in 0..255 {
+        tmp_str.push(' ' as u8);
     }
-    let pos: i32 = findChar(&buf, ' ' as u8, buf.len() as i32);
+    let pos: i32 = find_char(&buf, ' ' as u8, buf.len() as i32);
     // println!("pos = {}", pos);
-    let mut ptr = &mut tmpStr;
+    let mut ptr = &mut tmp_str;
     strncpy(ptr, buf, pos);
     (*ptr)[pos as usize] = '\0' as u8;
     // dmprint(ptr);
@@ -107,8 +107,8 @@ fn parse_ppm_header(ppmbuf: &mut Vec<u8>, len: i32) -> (i32, i32, i32) {
     // print!("{}", (*ppmbuf)[i as usize] as char);
     // }
     // println!("]");
-    let mut line: Vec<u8> = Vec::with_capacity(1024);
-    for i in 0..1023 {
+    let mut line: Vec<u8> = Vec::with_capacity(len as usize);
+    for _ in 0..len {
         line.push(' ' as u8);
     }
     // println!("ppmbuf.len = {}", (*ppmbuf).len());
@@ -119,11 +119,11 @@ fn parse_ppm_header(ppmbuf: &mut Vec<u8>, len: i32) -> (i32, i32, i32) {
     // }
     // println!("]");
     //
-    let mut headerLength: i32 = 0;
+    let mut header_length: i32 = 0;
 
     // PNM TYPE
     let mut lineptr = &mut line;
-    let mut n = readLine(tmpbuf, lineptr, 1024);
+    let mut n = read_line(tmpbuf, lineptr, 1024);
     //     println!("n = {}", n);
     // print!("lineptr = [");
     // for i in 0..n {
@@ -136,8 +136,8 @@ fn parse_ppm_header(ppmbuf: &mut Vec<u8>, len: i32) -> (i32, i32, i32) {
     // }
     // println!("]");
     //
-    headerLength += n;
-    n = readLine(tmpbuf, lineptr, 1024);
+    header_length += n;
+    n = read_line(tmpbuf, lineptr, 1024);
     //     println!("n = {}", n);
     // print!("tmpbuf = [");
     // for i in 0..12 {
@@ -145,7 +145,7 @@ fn parse_ppm_header(ppmbuf: &mut Vec<u8>, len: i32) -> (i32, i32, i32) {
     // }
     // println!("]");
     //
-    headerLength += n;
+    header_length += n;
     //     print!("lineptr = [");
     // for i in 0..n - 1 {
     // print!("{}", (*lineptr)[i as usize] as char);
@@ -155,11 +155,11 @@ fn parse_ppm_header(ppmbuf: &mut Vec<u8>, len: i32) -> (i32, i32, i32) {
     // lineptr = &mut line;
     let (width, height) = get_image_size(lineptr);
 
-    n = readLine(tmpbuf, lineptr, 1024);
+    n = read_line(tmpbuf, lineptr, 1024);
 
     // depth = atoi(line);
-    headerLength += n;
-    return (headerLength, width, height);
+    header_length += n;
+    return (header_length, width, height);
 }
 
 fn parse_ppm_p6(buf: &mut Vec<u8>, len: i32) -> Ppm {
@@ -185,7 +185,7 @@ fn main() {
         let mut mat = webcamrs::webcam::encode_image(".ppm", &frame, params);
         let mut matptr = &mut mat.buf;
         let ppminfo = parse_ppm_p6(matptr, mat.cols);
-        for i in 0..(ppminfo.index) {
+        for _ in 0..(ppminfo.index) {
             (*matptr).remove(0);
         }
         imgtypers::term_put_image(matptr, ppminfo.width, ppminfo.height);
@@ -202,7 +202,7 @@ fn main() {
             let mut mat = webcamrs::webcam::encode_image(".ppm", &frame, params);
             let mut matptr = &mut mat.buf;
             let ppminfo = parse_ppm_p6(matptr, mat.cols);
-            for i in 0..(ppminfo.index) {
+            for _ in 0..(ppminfo.index) {
                 (*matptr).remove(0);
             }
             imgtypers::term_put_image(matptr, ppminfo.width, ppminfo.height);
