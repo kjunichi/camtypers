@@ -1,5 +1,5 @@
-extern crate webcamrs;
 extern crate imgtypers;
+extern crate webcamrs;
 
 #[derive(Debug)]
 struct Ppm {
@@ -135,23 +135,15 @@ fn parse_ppm_p6(buf: &mut Vec<u8>, len: i32) -> Ppm {
 
 fn main() {
     imgtypers::term_init();
-    //let capture = webcamrs::webcam::create_camera_capture(0);
     let capture = webcamrs::webcam::video_capture(0);
     let frame = webcamrs::webcam::create_mat();
     loop {
-        //let frame = webcamrs::webcam::query_frame(&capture);
         webcamrs::webcam::read(&capture, &frame);
         let params = vec![];
-        //let mut mat = webcamrs::webcam::encode_image(".ppm", &frame, params);
         let mut buf = webcamrs::webcam::imencode(".ppm", &frame, params);
-        
-        let ppminfo = parse_ppm_p6(&mut buf, webcamrs::webcam::mat_cols(&frame));
-        //println!("ppminfo.index = {}", ppminfo.index);
-        let (header,ppmbuf) = buf.split_at(ppminfo.index as usize);
 
-        //for _ in 0..(ppminfo.index) {
-        //     buf.remove(0);
-        //}
+        let ppminfo = parse_ppm_p6(&mut buf, webcamrs::webcam::mat_cols(&frame));
+        let (_, ppmbuf) = buf.split_at((ppminfo.index - 1) as usize);
 
         imgtypers::term_put_image(&mut ppmbuf.to_vec(), ppminfo.width, ppminfo.height);
         imgtypers::term_flush();
