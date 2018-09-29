@@ -1,5 +1,5 @@
-extern crate webcamrs;
 extern crate imgtypers;
+extern crate webcamrs;
 
 #[derive(Debug)]
 struct Ppm {
@@ -21,7 +21,7 @@ fn dmprint(str: &Vec<u8>) {
 }
 
 fn atoi(num: String) -> i32 {
-    // println!("num = {}, {}", num, num.len());
+    //println!("num = {}, {}", num, num.len());
     num.parse().expect("not a number")
 }
 
@@ -47,7 +47,7 @@ fn read_line_(buf: &Vec<u8>, line: &mut Vec<u8>, len: i32) -> i32 {
     }
     strncpy(line, buf, pos);
     line[pos as usize] = '\0' as u8;
-    // dmprint(line);
+    //dmprint(line);
     return pos + 1;
 }
 
@@ -135,24 +135,23 @@ fn parse_ppm_p6(buf: &mut Vec<u8>, len: i32) -> Ppm {
 
 fn main() {
     imgtypers::term_init();
-    let capture = webcamrs::webcam::create_camera_capture(0);
-
+    let capture = webcamrs::webcam::video_capture(0);
+    let frame = webcamrs::webcam::create_mat();
     loop {
-        let frame = webcamrs::webcam::query_frame(&capture);
+        webcamrs::webcam::read(&capture, &frame);
         let params = vec![];
-        let mut mat = webcamrs::webcam::encode_image(".ppm", &frame, params);
-        let matptr = &mut mat.buf;
-        let ppminfo = parse_ppm_p6(matptr, mat.cols);
-        for _ in 0..(ppminfo.index) {
-            (*matptr).remove(0);
-        }
-        imgtypers::term_put_image(matptr, ppminfo.width, ppminfo.height);
+        let mut buf = webcamrs::webcam::imencode(".ppm", &frame, params);
+
+        let ppminfo = parse_ppm_p6(&mut buf, webcamrs::webcam::mat_cols(&frame));
+        let (_, ppmbuf) = buf.split_at((ppminfo.index - 1) as usize);
+
+        imgtypers::term_put_image(&mut ppmbuf.to_vec(), ppminfo.width, ppminfo.height);
         imgtypers::term_flush();
 
         if imgtypers::term_get_esc_key() {
             break;
         }
     }
-    webcamrs::webcam::release_capture(&capture);
+    webcamrs::webcam::release(&capture);
     imgtypers::term_close();
 }
