@@ -4,7 +4,7 @@ version = "0.1.0"
 authors = ["Junichi Kajiwara <junichi.kajiwara@gmail.com>"]
 
 [dependencies]
-webcamrs = {git =  "https://github.com/kjunichi/webcamrs/", branch = "change-cpp-api"}
+webcamrs = {git =  "https://github.com/kjunichi/webcamrs/"}
 #webcamrs = {path =  "C:/Users/kjw_j/Documents/work/rust/webcamrs/"}
 imgtypers = {git = "https://github.com/kjunichi/imgtypers/"}
-#imgtypers = {path = "C:/Users/kjw_j/Documents/work/rust/imgtypers/"}
+#imgtypers = {path = "C:/Users/kjw_j/Documents/work/rust/imgtypers/"
